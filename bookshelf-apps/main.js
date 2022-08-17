@@ -4,6 +4,8 @@
 const penulis = document.getElementById('inputBookAuthor');
 const masukkan = document.getElementById('inputBook');
 const RENDER_EVENT = 'render-book';
+const SAVED_EVENT = 'saved-book';
+const STORAGE_KEY = 'BOOK-SHELF-APPS';
 
 // Menyiapkan objek kosong untuk diisi nanti
 const buku = [];
@@ -32,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buku.push(objek);
 
     document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
   }
 
   function objekBuku(id, title, author, year, isComplete) {
@@ -55,33 +58,127 @@ document.addEventListener('DOMContentLoaded', () => {
     const year = document.createElement('p')
     year.innerText = `Tahun: ${objekBuku.year}`;
 
-    // sini
-    const button1 = document.createElement('button');
-    button1.innerText = 'Belum Selesai dibaca';
-    button1.classList.add('green');
+    const buttonSection = document.createElement('div');
+    buttonSection.classList.add('action');
 
-    const button2 = document.createElement('button');
-    button2.innerText = 'Hapus Buku';
-    button2.classList.add('red');
+    const greenButton = document.createElement('button');
+    greenButton.classList.add('green');
+    const redButton = document.createElement('button');
+    redButton.classList.add('red');
+    redButton.innerText = 'Hapus Buku';
 
-    const buttonContainer = document.createElement('div')
     const articleContainer = document.createElement('article');
-
-    // menanmbahkan class
-    buttonContainer.classList.add('action');
     articleContainer.classList.add('book_item');
+    articleContainer.setAttribute('id', `${objekBuku.id}`);
 
-    // menambahkan elemen
-    buttonContainer.append(button1, button2);
-    articleContainer.append(textTitle, author, year, buttonContainer);
+    articleContainer.append(textTitle, author, year, buttonSection);
+
+    if (objekBuku.isComplete) {
+      greenButton.innerText = 'Belum Selesai dibaca';
+      buttonSection.append(greenButton, redButton);
+
+      greenButton.addEventListener('click', () => {
+        moveToIncompleteBook(objekBuku.id);
+      });
+
+      redButton.addEventListener('click', () => {
+        deleteBook(objekBuku.id);
+        // const confirmation = confirm('Apakah Anda yakin ingin menghapus buku?');
+        // if (confirmation) {
+        //   deleteBook(objekBuku.id);
+        // }
+        // return;
+      });
+    } else {
+      greenButton.innerText = 'Selesai dibaca';
+      buttonSection.append(greenButton, redButton);
+
+      greenButton.addEventListener('click', () => {
+        moveToCompleteBook(objekBuku.id);
+      });
+
+      redButton.addEventListener('click', () => {
+        deleteBook(objekBuku.id);
+        // const confirmation = confirm('Apakah Anda yakin ingin menghapus buku?');
+        // if (confirmation) {
+        //   deleteBook(objekBuku.id);
+        // }
+        // return;
+      });
+    }
 
     return articleContainer;
-
   }
 
-  // Debugging only
+  function findBookId(bookId) {
+    for (const bookItem of buku) {
+      if (bookItem.id === bookId) {
+        return bookItem;
+      }
+    }
+    return null;
+  }
+
+
+  function moveToIncompleteBook(bookId) {
+    const bookTarget = findBookId(bookId);
+
+    if (bookTarget === null) return;
+
+    bookTarget.isComplete = false;
+    document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
+  }
+
+  function moveToCompleteBook(bookId) {
+    const bookTarget = findBookId(bookId);
+
+    if (bookTarget === null) return;
+
+    bookTarget.isComplete = true;
+    document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
+  }
+
+  function deleteBook(bookId) {
+    const bookTarget = findBookId(bookId);
+    if (bookTarget === -1) return;
+
+    buku.splice(bookTarget, 1);
+    document.dispatchEvent(new Event(RENDER_EVENT));
+    saveData();
+  }
+
+  function isStorageExist() {
+    if (typeof (Storage) === undefined) {
+      alert('Browser tidak mendukung web storage');
+      return false;
+    }
+    return true;
+  }
+
+  function saveData() {
+    if (isStorageExist()) {
+      const parsed = JSON.stringify(buku);
+      localStorage.setItem(STORAGE_KEY, parsed);
+      document.dispatchEvent(new Event(SAVED_EVENT));
+    }
+  }
+
+  function loadBookFromStorage() {
+    const dataFromStorage = localStorage.getItem(STORAGE_KEY);
+    let data = JSON.parse(dataFromStorage);
+
+    if (data !== null) {
+      for (const book of data) {
+        buku.push(book);
+      }
+    }
+
+    document.dispatchEvent(new Event(RENDER_EVENT));
+  }
+
   document.addEventListener(RENDER_EVENT, () => {
-    console.log(buku);
     const incompleteBookList = document.getElementById('incompleteBookshelfList');
     const completeBookList = document.getElementById('completeBookshelfList');
     incompleteBookList.innerHTML = '';
@@ -89,16 +186,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (item of buku) {
       const elemenBuku = makeList(item);
-      if (!buku[0].isComplete) {
+      if (!item.isComplete) {
         incompleteBookList.append(elemenBuku);
-        console.log(`kondisi: ${buku}`);
       } else {
         completeBookList.append(elemenBuku);
-        console.log('belum');
       }
     }
-
   });
+
+  document.addEventListener(SAVED_EVENT, () => {
+    console.log(localStorage.getItem(STORAGE_KEY));
+  });
+
+  if (isStorageExist()) {
+    loadBookFromStorage();
+  }
 });
 
 
