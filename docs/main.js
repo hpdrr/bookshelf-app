@@ -1,4 +1,4 @@
-import Swal from 'sweetalert2'
+// import Swal from 'sweetalert2'
 // const Swal = require('sweetalert2')
 const masukkan = document.getElementById('inputBook');
 const ceklis = document.getElementById('inputBookIsComplete');
