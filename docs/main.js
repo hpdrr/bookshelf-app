@@ -1,11 +1,11 @@
-
-
-
-const penulis = document.getElementById('inputBookAuthor');
+// import Swal from 'sweetalert2'
+// const Swal = require('sweetalert2')
 const masukkan = document.getElementById('inputBook');
+const ceklis = document.getElementById('inputBookIsComplete');
 const RENDER_EVENT = 'render-book';
 const SAVED_EVENT = 'saved-book';
 const STORAGE_KEY = 'BOOK-SHELF-APPS';
+
 
 // Menyiapkan objek kosong untuk diisi nanti
 const buku = [];
@@ -14,6 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
   masukkan.addEventListener('submit', (event) => {
     event.preventDefault();
     addBook();
+    if (ceklis.checked) {
+      Swal.fire({
+        title: "Berhasil ditambahkan ke Selesai baca",
+        icon: 'success'
+      });
+    } else {
+      Swal.fire({
+        title: "Berhasil ditambahkan ke Belum selesai baca",
+        icon: 'success'
+      });
+    }
   });
 
 
@@ -53,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     textTitle.innerText = objekBuku.title;
 
     const author = document.createElement('p')
-    author.innerText = `Penulis: ${objekBuku.title}`;
+    author.innerText = `Penulis: ${objekBuku.author}`;
 
     const year = document.createElement('p')
     year.innerText = `Tahun: ${objekBuku.year}`;
@@ -65,7 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     greenButton.classList.add('green');
     const redButton = document.createElement('button');
     redButton.classList.add('red');
-    redButton.innerText = 'Hapus Buku';
+    // redButton.innerText = 'Hapus Buku';
+    redButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
+
 
     const articleContainer = document.createElement('article');
     articleContainer.classList.add('book_item');
@@ -75,35 +88,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (objekBuku.isComplete) {
       greenButton.innerText = 'Belum Selesai dibaca';
+      greenButton.innerHTML = '<i class="fa-regular fa-circle-up"></i>';
       buttonSection.append(greenButton, redButton);
 
       greenButton.addEventListener('click', () => {
         moveToIncompleteBook(objekBuku.id);
+        Swal.fire({
+          title: "Belum Selesai dibaca",
+          text: `${objekBuku.title} dipindahkan ke Belum selesai dibaca.`,
+          icon: 'info'
+        });
       });
 
       redButton.addEventListener('click', () => {
-        // deleteBook(objekBuku.id);
-        const confirmation = confirm('Apakah Anda yakin ingin menghapus buku?');
-        if (confirmation) {
-          deleteBook(objekBuku.id);
-        }
-        return;
+        Swal.fire({
+          title: `Anda yakin ingin menghapus ${objekBuku.title} dari daftar Selesai dibaca?`,
+          text: "Anda tidak akan bisa mengembalikan perubahan ini!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          cancelButtonText: 'Batal',
+          confirmButtonText: 'Ya, Hapus saja'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            deleteBook(objekBuku.id);
+            Swal.fire(
+              'Berhasil dihapus!',
+              `Buku ${objekBuku.title} berhasil dihapus dari daftar Selesai dibaca`,
+              'success'
+            )
+          }
+        })
       });
     } else {
-      greenButton.innerText = 'Selesai dibaca';
+      greenButton.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
       buttonSection.append(greenButton, redButton);
 
       greenButton.addEventListener('click', () => {
         moveToCompleteBook(objekBuku.id);
+        Swal.fire({
+          title: "Selesai!",
+          text: `${objekBuku.title} Selesai dibaca.`,
+          icon: 'success'
+        });
       });
 
       redButton.addEventListener('click', () => {
-        // deleteBook(objekBuku.id);
-        const confirmation = confirm('Apakah Anda yakin ingin menghapus buku?');
-        if (confirmation) {
-          deleteBook(objekBuku.id);
-        }
-        return;
+        Swal.fire({
+          title: `Anda yakin ingin menghapus ${objekBuku.title} dari daftar Belum selesai dibaca?`,
+          text: "Anda tidak akan bisa mengembalikan perubahan ini!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          cancelButtonText: 'Batal',
+          confirmButtonText: 'Ya, Hapus saja'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            deleteBook(objekBuku.id);
+            Swal.fire(
+              'Berhasil dihapus!',
+              `Buku ${objekBuku.title} berhasil dihapus dari daftar Belum selesai dibaca`,
+              'success'
+            )
+          }
+        })
       });
     }
 
@@ -203,9 +253,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.addEventListener(SAVED_EVENT, () => {
-    console.log(localStorage.getItem(STORAGE_KEY));
-  });
+  // document.addEventListener(SAVED_EVENT, () => {
+  //   console.log(localStorage.getItem(STORAGE_KEY));
+  // });
 
   if (isStorageExist()) {
     loadBookFromStorage();
