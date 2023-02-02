@@ -1,43 +1,39 @@
 // import Swal from 'sweetalert2'
 // const Swal = require('sweetalert2')
-const masukkan = document.getElementById('inputBook');
-const ceklis = document.getElementById('inputBookIsComplete');
-const RENDER_EVENT = 'render-book';
-const SAVED_EVENT = 'saved-book';
-const STORAGE_KEY = 'BOOK-SHELF-APPS';
-
+const masukkan = document.getElementById("inputBook");
+const ceklis = document.getElementById("inputBookIsComplete");
+const RENDER_EVENT = "render-book";
+const SAVED_EVENT = "saved-book";
+const STORAGE_KEY = "BOOK-SHELF-APPS";
 
 // Menyiapkan objek kosong untuk diisi nanti
 const buku = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-  masukkan.addEventListener('submit', (event) => {
+document.addEventListener("DOMContentLoaded", () => {
+  masukkan.addEventListener("submit", (event) => {
     event.preventDefault();
     addBook();
     if (ceklis.checked) {
       Swal.fire({
         title: "Berhasil ditambahkan ke Selesai baca",
-        icon: 'success'
+        icon: "success",
       });
     } else {
       Swal.fire({
         title: "Berhasil ditambahkan ke Belum selesai baca",
-        icon: 'success'
+        icon: "success",
       });
     }
   });
 
-
-
   function addBook() {
     // Inisialisasi setiap elemen
-    const title = document.getElementById('inputBookTitle').value;
-    const year = parseInt(document.getElementById('inputBookYear').value);
-    const author = document.getElementById('inputBookAuthor').value;
-    const selesaiBaca = document.getElementById('inputBookIsComplete').checked;
-    // Untuk membuat id 
+    const title = document.getElementById("inputBookTitle").value;
+    const year = parseInt(document.getElementById("inputBookYear").value);
+    const author = document.getElementById("inputBookAuthor").value;
+    const selesaiBaca = document.getElementById("inputBookIsComplete").checked;
+    // Untuk membuat id
     const id = +new Date();
-
 
     const objek = objekBuku(id, title, author, year, selesaiBaca);
 
@@ -54,106 +50,104 @@ document.addEventListener('DOMContentLoaded', () => {
       title,
       author,
       year,
-      isComplete
-    }
+      isComplete,
+    };
   }
 
   function makeList(objekBuku) {
-
-    const textTitle = document.createElement('h3')
+    const textTitle = document.createElement("h3");
     textTitle.innerText = objekBuku.title;
 
-    const author = document.createElement('p')
+    const author = document.createElement("p");
     author.innerText = `Penulis: ${objekBuku.author}`;
 
-    const year = document.createElement('p')
+    const year = document.createElement("p");
     year.innerText = `Tahun: ${objekBuku.year}`;
 
-    const buttonSection = document.createElement('div');
-    buttonSection.classList.add('action');
+    const buttonSection = document.createElement("div");
+    buttonSection.classList.add("action");
 
-    const greenButton = document.createElement('button');
-    greenButton.classList.add('green');
-    const redButton = document.createElement('button');
-    redButton.classList.add('red');
+    const greenButton = document.createElement("button");
+    greenButton.classList.add("green");
+    const redButton = document.createElement("button");
+    redButton.classList.add("red");
     // redButton.innerText = 'Hapus Buku';
     redButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
 
-
-    const articleContainer = document.createElement('article');
-    articleContainer.classList.add('book_item');
-    articleContainer.setAttribute('id', `${objekBuku.id}`);
+    const articleContainer = document.createElement("article");
+    articleContainer.classList.add("book_item");
+    articleContainer.setAttribute("id", `${objekBuku.id}`);
 
     articleContainer.append(textTitle, author, year, buttonSection);
 
     if (objekBuku.isComplete) {
-      greenButton.innerText = 'Belum Selesai dibaca';
+      greenButton.innerText = "Belum Selesai dibaca";
       greenButton.innerHTML = '<i class="fa-regular fa-circle-up"></i>';
       buttonSection.append(greenButton, redButton);
 
-      greenButton.addEventListener('click', () => {
+      greenButton.addEventListener("click", () => {
         moveToIncompleteBook(objekBuku.id);
         Swal.fire({
           title: "Belum Selesai dibaca",
           text: `${objekBuku.title} dipindahkan ke Belum selesai dibaca.`,
-          icon: 'info'
+          icon: "info",
         });
       });
 
-      redButton.addEventListener('click', () => {
+      redButton.addEventListener("click", () => {
         Swal.fire({
           title: `Anda yakin ingin menghapus ${objekBuku.title} dari daftar Selesai dibaca?`,
           text: "Anda tidak akan bisa mengembalikan perubahan ini!",
-          icon: 'warning',
+          icon: "warning",
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          cancelButtonText: 'Batal',
-          confirmButtonText: 'Ya, Hapus saja'
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "Batal",
+          confirmButtonText: "Ya, Hapus saja",
         }).then((result) => {
           if (result.isConfirmed) {
             deleteBook(objekBuku.id);
             Swal.fire(
-              'Berhasil dihapus!',
+              "Berhasil dihapus!",
               `Buku ${objekBuku.title} berhasil dihapus dari daftar Selesai dibaca`,
-              'success'
-            )
+              "success"
+            );
           }
-        })
+        });
       });
     } else {
       greenButton.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
       buttonSection.append(greenButton, redButton);
 
-      greenButton.addEventListener('click', () => {
+      greenButton.addEventListener("click", () => {
         moveToCompleteBook(objekBuku.id);
         Swal.fire({
           title: "Selesai!",
           text: `${objekBuku.title} Selesai dibaca.`,
-          icon: 'success'
+          icon: "success",
         });
       });
 
-      redButton.addEventListener('click', () => {
+      redButton.addEventListener("click", () => {
         Swal.fire({
           title: `Anda yakin ingin menghapus ${objekBuku.title} dari daftar Belum selesai dibaca?`,
           text: "Anda tidak akan bisa mengembalikan perubahan ini!",
-          icon: 'warning',
+          icon: "warning",
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          cancelButtonText: 'Batal',
-          confirmButtonText: 'Ya, Hapus saja'
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "Batal",
+          confirmButtonText: "Ya",
         }).then((result) => {
           if (result.isConfirmed) {
             deleteBook(objekBuku.id);
             Swal.fire(
-              'Berhasil dihapus!',
+              "Berhasil dihapus!",
               `Buku ${objekBuku.title} berhasil dihapus dari daftar Belum selesai dibaca`,
-              'success'
-            )
+              "success"
+            );
           }
-        })
+        });
       });
     }
 
@@ -209,8 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function isStorageExist() {
-    if (typeof (Storage) === undefined) {
-      alert('Browser tidak mendukung web storage');
+    if (typeof Storage === undefined) {
+      alert("Browser tidak mendukung web storage");
       return false;
     }
     return true;
@@ -238,10 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener(RENDER_EVENT, () => {
-    const incompleteBookList = document.getElementById('incompleteBookshelfList');
-    const completeBookList = document.getElementById('completeBookshelfList');
-    incompleteBookList.innerHTML = '';
-    completeBookList.innerHTML = '';
+    const incompleteBookList = document.getElementById(
+      "incompleteBookshelfList"
+    );
+    const completeBookList = document.getElementById("completeBookshelfList");
+    incompleteBookList.innerHTML = "";
+    completeBookList.innerHTML = "";
 
     for (item of buku) {
       const elemenBuku = makeList(item);
@@ -261,6 +257,3 @@ document.addEventListener('DOMContentLoaded', () => {
     loadBookFromStorage();
   }
 });
-
-
-
