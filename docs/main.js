@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           cancelButtonText: "Batal",
-          confirmButtonText: "Ya, Hapus saja",
+          confirmButtonText: "Ya",
         }).then((result) => {
           if (result.isConfirmed) {
             deleteBook(objekBuku.id);
