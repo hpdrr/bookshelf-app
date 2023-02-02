@@ -72,7 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const redButton = document.createElement("button");
     redButton.classList.add("red");
     // redButton.innerText = 'Hapus Buku';
-    redButton.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
+    redButton.innerHTML =
+      '<span class="material-symbols-outlined">delete_forever</span>';
 
     const articleContainer = document.createElement("article");
     articleContainer.classList.add("book_item");
@@ -82,7 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (objekBuku.isComplete) {
       greenButton.innerText = "Belum Selesai dibaca";
-      greenButton.innerHTML = '<i class="fa-regular fa-circle-up"></i>';
+      greenButton.innerHTML =
+        '<span class="material-symbols-outlined">refresh</span>';
       buttonSection.append(greenButton, redButton);
 
       greenButton.addEventListener("click", () => {
@@ -116,7 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     } else {
-      greenButton.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+      greenButton.innerHTML =
+        '<span class="material-symbols-outlined">done_outline</span>';
       buttonSection.append(greenButton, redButton);
 
       greenButton.addEventListener("click", () => {
