@@ -71,7 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
     greenButton.classList.add("green");
     const redButton = document.createElement("button");
     redButton.classList.add("red");
+
     // redButton.innerText = 'Hapus Buku';
+    // delete book button
     redButton.innerHTML =
       '<span class="material-symbols-outlined">delete_forever</span>';
 
@@ -83,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (objekBuku.isComplete) {
       greenButton.innerText = "Belum Selesai dibaca";
+      //   unread button
       greenButton.innerHTML =
         '<span class="material-symbols-outlined">refresh</span>';
       buttonSection.append(greenButton, redButton);
@@ -118,8 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     } else {
+      // readed button
       greenButton.innerHTML =
-        '<span class="material-symbols-outlined">done_outline</span>';
+        '<span class="material-symbols-outlined">done</span>';
       buttonSection.append(greenButton, redButton);
 
       greenButton.addEventListener("click", () => {
