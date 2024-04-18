@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // menambahakan objek ke variabel buku
     buku.push(objek);
 
+    let form = document.getElementById("inputBook");
+    form.reset();
     document.dispatchEvent(new Event(RENDER_EVENT));
     saveData();
   }
